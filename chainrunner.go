@@ -79,7 +79,11 @@ func generateTreeChain(node interface{}) *TreeChain {
 	if !ok {
 		return nil
 	}
-	chain := NewTreeChain(getOptionalTreeChainConfig(commands[:3]))
+	var possibleOptions []interface{}
+	if len(commands) >= 3 {
+		possibleOptions = commands[:3]
+	}
+	chain := NewTreeChain(getOptionalTreeChainConfig(possibleOptions))
 	for _, command := range commands {
 		nestedChain, ok := command.(map[interface{}]interface{})
 		if ok {
