@@ -1,0 +1,6 @@
+root:
+  - addr: 127.0.0.1:22
+  - user: test
+  - password: test2
+  - echo 'test' >> test
+  - cat test
