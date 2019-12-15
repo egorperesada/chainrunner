@@ -4,6 +4,9 @@ import (
 	"golang.org/x/crypto/ssh"
 	yaml "gopkg.in/yaml.v2"
 	"io/ioutil"
+	"log"
+	"os"
+	"os/exec"
 )
 
 type Chain interface {
@@ -22,6 +25,10 @@ func Run(chain Chain) error {
 	}
 
 	for _, command := range chain.Commands() {
+		log.Print(command)
+		if command == nil {
+			continue
+		}
 		command.Execute()
 	}
 	return nil
@@ -29,29 +36,78 @@ func Run(chain Chain) error {
 
 type TreeChain struct {
 	commands []ChainCommand
-	config   ssh.ClientConfig
+	config   *ssh.ClientConfig
 	addr     string
+	session  Session
 }
 
 func (t *TreeChain) ConnectHost() error {
-	panic("implement me")
+	if t.addr == "" {
+		return nil
+	}
+	t.config.HostKeyCallback = ssh.InsecureIgnoreHostKey()
+	client, err := ssh.Dial("tcp", t.addr, t.config)
+	if err != nil {
+		return err
+	}
+
+	session, err := client.NewSession()
+	if err != nil {
+		return err
+	}
+	session.Stdin = os.Stdin
+	session.Stdout = os.Stdout
+	session.Stderr = os.Stderr
+	for _, command := range t.commands {
+		simpleCommand, ok := command.(*SimpleCommand)
+		if ok {
+			simpleCommand.session = session
+		}
+	}
+	t.session = session
+	return nil
 }
 
 func (t *TreeChain) Commands() []ChainCommand {
-	panic("implement me")
+	return t.commands
 }
 
 func (t *TreeChain) Execute() {
-	panic("implement me")
+	log.Print("start tree chain")
+	err := Run(t)
+	log.Print(err)
+	t.session.Close()
 }
 
 type SimpleCommand struct {
 	command string
-	session *ssh.Session
+	session Session
+}
+
+type Session interface {
+	Run(cmd string) error
+	Close() error
+}
+
+type RootSession struct {
+}
+
+func (r *RootSession) Close() error { return nil }
+
+func (r *RootSession) Run(cmd string) error {
+	command := exec.Command("/bin/sh", "-c", cmd)
+	command.Stdout = os.Stdout
+	command.Stderr = os.Stderr
+	command.Stdin = os.Stdin
+	return command.Run()
 }
 
 func (s *SimpleCommand) Execute() {
-	panic("implement me")
+	log.Print("simple command:" + s.command)
+	if s.session == nil {
+		s.session = &RootSession{}
+	}
+	s.session.Run(s.command)
 }
 
 func FromYaml(source string, isRaw bool) Chain {
@@ -65,7 +121,7 @@ func FromYaml(source string, isRaw bool) Chain {
 	return generateTreeChain(out["root"])
 }
 
-func NewTreeChain(addr string, config ssh.ClientConfig) *TreeChain {
+func NewTreeChain(addr string, config *ssh.ClientConfig) *TreeChain {
 	chain := &TreeChain{
 		addr:   addr,
 		config: config,
@@ -87,7 +143,15 @@ func generateTreeChain(node interface{}) *TreeChain {
 	for _, command := range commands {
 		nestedChain, ok := command.(map[interface{}]interface{})
 		if ok {
-			element = generateTreeChain(nestedChain)
+			var value interface{}
+			var name interface{}
+			for name, value = range nestedChain {
+				break
+			}
+			if name == "addr" || name == "user" || name == "password" {
+				continue
+			}
+			element = generateTreeChain(value)
 			if element != nil {
 				chain.commands = append(chain.commands, element)
 			}
@@ -107,9 +171,9 @@ func generateTreeChain(node interface{}) *TreeChain {
 	return chain
 }
 
-func getOptionalTreeChainConfig(options []interface{}) (string, ssh.ClientConfig) {
+func getOptionalTreeChainConfig(options []interface{}) (string, *ssh.ClientConfig) {
 	var addr string
-	var clientConfig = ssh.ClientConfig{}
+	var clientConfig = &ssh.ClientConfig{}
 	for _, option := range options {
 		keyValue, ok := option.(map[interface{}]interface{})
 		if !ok {
