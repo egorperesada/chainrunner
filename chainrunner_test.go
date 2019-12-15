@@ -13,25 +13,25 @@ import (
 )
 
 func TestSimpleChain(t *testing.T) {
-	chain := FromYaml("simpleChain.yaml", false)
-	defer os.Remove("test")
+	chain := FromYaml("test/chains/simpleChain.yaml", false)
+	defer os.Remove("TestSimpleChain")
 	err := Run(chain)
 	if err != nil {
 		t.Error(err)
 	}
 
-	data, err := ioutil.ReadFile("test")
+	data, err := ioutil.ReadFile("TestSimpleChain")
 	if err != nil {
 		t.Error(err)
 	}
 
-	if string(data)[:4] != "test" {
-		t.Errorf("expected test, got '%s'", string(data))
+	if !strings.Contains(string(data), "TestSimpleChain") {
+		t.Errorf("expected TestSimpleChain, got '%s'", string(data))
 	}
 }
 
 func TestChainWithHostAttributes(t *testing.T) {
-	chain := FromYaml("chainWithHostAttributes.yaml", false)
+	chain := FromYaml("test/chains/chainWithHostAttributes.yaml", false)
 	tchain := chain.(*TreeChain)
 	if tchain.addr != "127.0.0.1:22" {
 		t.Errorf("expected 127.0.0.1:22, got %s", tchain.addr)
@@ -102,7 +102,7 @@ func startEnvironment() (func(), string, error, string) {
 	if len(port) == 0 {
 		return nil, "", errors.New("did not get port for container"), ""
 	}
-	source, err := ioutil.ReadFile("chainWithSshConnections.yaml")
+	source, err := ioutil.ReadFile("test/chains/chainWithSshConnections.yaml")
 	if err != nil {
 		return nil, "", err, ""
 	}
