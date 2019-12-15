@@ -1,4 +1,4 @@
-module chainrunner
+module github.com/egorperesada/chainrunner
 
 go 1.13
 

@@ -1,8 +1,8 @@
 package main
 
 import (
-	"chainrunner"
 	"flag"
+	"github.com/egorperesada/chainrunner"
 	"log"
 )
 
