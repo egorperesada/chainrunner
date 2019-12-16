@@ -96,8 +96,8 @@ func TestChainWithSshConnections(t *testing.T) {
 
 func startEnvironment() (func(), string, error, string) {
 	containerName := "test_sshd"
-	exec.Command("/bin/sh", "-c", fmt.Sprintf("docker build -t eg_sshd -f test/sshServerImage .")).Run()
-	command := exec.Command("/bin/sh", "-c", fmt.Sprintf("docker run -d -P --name %s eg_sshd", containerName))
+	exec.Command("/bin/sh", "-c", fmt.Sprintf("docker build -t ssh_server:latest -f test/sshServerImage/Dockerfile .")).Run()
+	command := exec.Command("/bin/sh", "-c", fmt.Sprintf("docker run -d -P --name %s ssh_server", containerName))
 	command.Stderr = os.Stderr
 	command.Run()
 	port := getSshPort(containerName)
