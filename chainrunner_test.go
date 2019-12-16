@@ -89,7 +89,9 @@ func TestChainWithSshConnections(t *testing.T) {
 	if !strings.Contains(string(content), "line was added on container") {
 		t.Error("chainrunner does not contain line from container")
 	}
-
+	if !strings.Contains(string(content), "2d command on container") {
+		t.Error("chainrunner does not contain 2d command on container")
+	}
 }
 
 func startEnvironment() (func(), string, error, string) {
