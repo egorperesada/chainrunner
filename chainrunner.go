@@ -1,12 +1,16 @@
 package chainrunner
 
 import (
+	"bytes"
+	"fmt"
 	"golang.org/x/crypto/ssh"
 	yaml "gopkg.in/yaml.v2"
+	"io"
 	"io/ioutil"
 	"log"
 	"os"
 	"os/exec"
+	"strings"
 )
 
 type Chain interface {
@@ -25,7 +29,6 @@ func Run(chain Chain) error {
 	}
 
 	for _, command := range chain.Commands() {
-		log.Print(command)
 		if command == nil {
 			continue
 		}

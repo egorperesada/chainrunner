@@ -14,7 +14,6 @@ import (
 
 func TestSimpleChain(t *testing.T) {
 	chain := FromYaml("test/chains/simpleChain.yaml", false)
-	defer os.Remove("TestSimpleChain")
 	err := Run(chain)
 	if err != nil {
 		t.Error(err)

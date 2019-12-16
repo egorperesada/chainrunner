@@ -13,7 +13,6 @@ func main() {
 	if *chainFile == "" {
 		log.Fatal("missed chainFile")
 	}
-	flag.Parse()
 	chain := chainrunner.FromYaml(*chainFile, false)
 	chainrunner.Run(chain)
 }
