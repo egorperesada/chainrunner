@@ -1,2 +1,3 @@
 root:
   - echo 'TestSimpleChain' >> TestSimpleChain
+  - echo 'TestSimpleChain2' >> TestSimpleChain2

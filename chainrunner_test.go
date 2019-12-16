@@ -19,15 +19,20 @@ func TestSimpleChain(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
+	for _, fileName := range []string{"TestSimpleChain", "TestSimpleChain2"} {
+		func(t *testing.T, fileName string) {
+			defer os.Remove(fileName)
+			data, err := ioutil.ReadFile(fileName)
+			if err != nil {
+				t.Error(err)
+			}
 
-	data, err := ioutil.ReadFile("TestSimpleChain")
-	if err != nil {
-		t.Error(err)
+			if !strings.Contains(string(data), fileName) {
+				t.Errorf("expected %s, got '%s'", fileName, string(data))
+			}
+		}(t, fileName)
 	}
 
-	if !strings.Contains(string(data), "TestSimpleChain") {
-		t.Errorf("expected TestSimpleChain, got '%s'", string(data))
-	}
 }
 
 func TestChainWithHostAttributes(t *testing.T) {
