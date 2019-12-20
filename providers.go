@@ -11,14 +11,6 @@ type Provider interface {
 	CreateChain() *CommandsChain
 }
 
-type BaseProvider struct {
-	data Chain
-}
-
-func (b *BaseProvider) CreateChain() *CommandsChain {
-	return NewCommandsChain(b.data, NewLocalHost())
-}
-
 type YamlProvider struct {
 	source string
 	data   string
