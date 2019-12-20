@@ -30,7 +30,7 @@ type CommandsChain struct {
 	commands []Command
 }
 
-func NewCommandsChain(content map[interface{}]interface{}, session Session) *CommandsChain {
+func NewCommandsChain(content Chain, session Session) *CommandsChain {
 	var name, block interface{}
 	for name, block = range content {
 		break

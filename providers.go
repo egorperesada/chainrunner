@@ -2,36 +2,62 @@ package chainrunner
 
 import (
 	"gopkg.in/yaml.v2"
+	"log"
 )
+
+type Chain map[interface{}]interface{}
 
 type Provider interface {
 	CreateChain() *CommandsChain
 }
 
+type BaseProvider struct {
+	data Chain
+}
+
+func (b *BaseProvider) CreateChain() *CommandsChain {
+	return NewCommandsChain(b.data, NewLocalHost())
+}
+
 type YamlProvider struct {
-	data map[interface{}]interface{}
+	source string
+	data   string
 }
 
 func (y *YamlProvider) CreateChain() *CommandsChain {
-	return NewCommandsChain(y.data, NewLocalHost())
+	chain, err := y.getData()
+	if err != nil {
+		log.Fatal(err)
+	}
+	return NewCommandsChain(chain, NewLocalHost())
 }
 
-func NewYamlProvider(path string, data string, isRaw bool) (*YamlProvider, error) {
-	if !isRaw {
+func (y *YamlProvider) getData() (Chain, error) {
+	var rawData []byte
+	var err error
+	if y.source != "" {
 		session := NewLocalHost()
-		rawData, err := readFile(session, path)
+		rawData, err = readFile(session, y.source)
 		if err != nil {
 			return nil, err
 		}
-		data = string(rawData)
 	}
-	var out map[interface{}]interface{}
-	err := yaml.Unmarshal([]byte(data), &out)
+	var out Chain
+	err = yaml.Unmarshal(rawData, &out)
 	if err != nil {
 		return nil, err
 	}
 
-	return &YamlProvider{data: out}, nil
+	return out, nil
+}
+
+func NewYamlProvider(path string, rawData string, isRaw bool) (*YamlProvider, error) {
+	data, source := "", path
+	if isRaw {
+		data, source = rawData, ""
+	}
+
+	return &YamlProvider{data: data, source: source}, nil
 }
 
 func NewYamlProviderFromFile(path string) (*YamlProvider, error) {
