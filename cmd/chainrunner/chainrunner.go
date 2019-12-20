@@ -13,6 +13,9 @@ func main() {
 	if *chainFile == "" {
 		log.Fatal("missed chainFile")
 	}
-	chain := chainrunner.FromYaml(*chainFile, false)
-	chainrunner.Run(chain)
+	provider, err := chainrunner.NewYamlProviderFromFile(*chainFile)
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Println(provider.CreateChain().Execute())
 }

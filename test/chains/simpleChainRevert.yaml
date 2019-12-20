@@ -1,0 +1,3 @@
+root:
+  - rm TestSimpleChain
+  - rm TestSimpleChain2

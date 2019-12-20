@@ -1,9 +1,9 @@
 root:
-  - echo 'line was added on host' >> chainrunner
-  - scp -P {{port}} -o PubkeyAuthentication=no chainrunner root@127.0.0.1:/root
+  - echo 'line was added on host' >> chainrunner_old
+  - scp -P {{port}} -o PubkeyAuthentication=no chainrunner_old root@127.0.0.1:/root
   - container:
       - user: root
       - password: password
       - addr: 127.0.0.1:{{port}}
-      - echo 'line was added on container' >> chainrunner
-      - echo '2d command on container' >> chainrunner
+      - echo 'line was added on container' >> chainrunner_old
+      - echo '2d command on container' >> chainrunner_old
