@@ -2,10 +2,12 @@ package chainrunner
 
 import (
 	"github.com/stretchr/testify/assert"
+	"log"
 	"testing"
 )
 
 func TestRunnerExecute(t *testing.T) {
+	log.SetFlags(log.Lshortfile)
 	type testCase struct {
 		source    string
 		checkFunc func(t *testing.T)

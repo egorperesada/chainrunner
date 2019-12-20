@@ -9,6 +9,7 @@ import (
 var chainFile = flag.String("file", "", "path to file that contains chain source")
 
 func main() {
+	log.SetFlags(0)
 	flag.Parse()
 	if *chainFile == "" {
 		log.Fatal("missed chainFile")
