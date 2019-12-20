@@ -6,6 +6,7 @@ type Command interface {
 	Execute() error
 }
 
+// implements Command
 type SingleCommand struct {
 	cmd  string
 	host Session
@@ -22,6 +23,7 @@ func (s *SingleCommand) Execute() error {
 	return s.host.Run(s.cmd)
 }
 
+// implements command
 type CommandsChain struct {
 	name     string
 	session  Session
