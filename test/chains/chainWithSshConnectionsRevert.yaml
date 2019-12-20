@@ -1,0 +1,7 @@
+root:
+  - rm chainrunner_old
+  - container:
+      - user: root
+      - password: password
+      - addr: 127.0.0.1:{{port}}
+      - rm chainrunner_old

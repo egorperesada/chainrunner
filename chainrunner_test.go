@@ -20,6 +20,9 @@ func TestRunnerExecute(t *testing.T) {
 		{"test/chains/chainWithSshConnections.yaml", func(t *testing.T) {
 			return
 		}},
+		{"test/chains/chainWithSshConnectionsRevert.yaml", func(t *testing.T) {
+			return
+		}},
 	}
 
 	for _, chain := range cases {
