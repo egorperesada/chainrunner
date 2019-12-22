@@ -25,14 +25,16 @@ func (y *YamlProvider) CreateChain() *CommandsChain {
 }
 
 func (y *YamlProvider) getData() (Chain, error) {
-	var rawData []byte
 	var err error
+	var rawData []byte
 	if y.source != "" {
 		session := NewLocalHost()
 		rawData, err = readFile(session, y.source)
 		if err != nil {
 			return nil, err
 		}
+	} else {
+		rawData = []byte(y.data)
 	}
 	var out Chain
 	err = yaml.Unmarshal(rawData, &out)
