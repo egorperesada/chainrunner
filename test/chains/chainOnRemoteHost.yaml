@@ -1,0 +1,8 @@
+root:
+  - echo 'line was added on host' >> chainrunner
+  - container:
+      - user: root
+      - password: password
+      - addr: 127.0.0.1:{{port}}
+      - echo 'line was added on container' >> chainrunner
+      - echo '2d command on container' >> chainrunner
