@@ -46,7 +46,7 @@ func NewCommandsChain(content Chain, session Session) *CommandsChain {
 	if session != nil {
 		chain.session = session
 	} else {
-		chain.session = &RemoteHost{}
+		chain.session = NewEmptyRemoteHost()
 	}
 	for _, element := range data {
 		singleCommand, ok := element.(string)
