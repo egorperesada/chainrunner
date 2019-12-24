@@ -11,8 +11,8 @@ type Command interface {
 
 // implements Command
 type SingleCommand struct {
-	cmd  string
-	host Session
+	cmd     string
+	session Session
 }
 
 func NewSingleCommand(cmd string) *SingleCommand {
@@ -22,8 +22,15 @@ func NewSingleCommand(cmd string) *SingleCommand {
 }
 
 func (s *SingleCommand) Execute() error {
-	log.Printf("%s: $ %s", s.host.String(), s.cmd)
-	return s.host.Run(s.cmd)
+	if s.session == nil {
+		return errors.New("no session specified for command")
+	}
+	err := s.session.Run(s.cmd)
+	log.Printf("%s: $ %s", s.session.String(), s.cmd)
+	if err != nil {
+		log.Printf("%s err: %s", s.cmd, err)
+	}
+	return err
 }
 
 // implements command
@@ -108,7 +115,7 @@ func (c *CommandsChain) Execute() error {
 	for _, command := range c.commands {
 		singleCommand, ok := command.(*SingleCommand)
 		if ok {
-			singleCommand.host = c.session
+			singleCommand.session = c.session
 		}
 		err := command.Execute()
 		if err != nil {
