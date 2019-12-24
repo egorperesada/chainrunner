@@ -48,22 +48,55 @@ func NewCommandsChain(content Chain, session Session) *CommandsChain {
 	} else {
 		chain.session = NewEmptyRemoteHost()
 	}
+	data, config := extractConfigFields(data)
+	chain.session.Configure(config)
 	for _, element := range data {
-		singleCommand, ok := element.(string)
-		if ok {
-			chain.AddCommand(NewSingleCommand(singleCommand))
+		command := getCommand(element)
+		if command != nil {
+			chain.AddCommand(command)
+			continue
+		}
+	}
+
+	return chain
+}
+
+func extractConfigFields(data []interface{}) ([]interface{}, map[string]interface{}) {
+	config := make(map[string]interface{})
+	var toDelete []int
+	for i, element := range data {
+		keyValue, ok := element.(Chain)
+		if !ok {
+			continue
+		}
+		var key, value interface{}
+		for key, value = range keyValue {
+			break
 		}
 
-		data, ok := element.(map[interface{}]interface{})
-		if ok {
-			command := NewCommandsChain(data, nil)
-			if command != nil {
-				chain.AddCommand(command)
-				continue
-			}
-
-			chain.session.Configure(data)
+		if key == "addr" || key == "user" || key == "password" {
+			toDelete = append(toDelete, i)
+			config[key.(string)] = value
 		}
+	}
+
+	return deleteFromSlice(data, toDelete), config
+}
+
+func getCommand(element interface{}) Command {
+	singleCommand, ok := element.(string)
+	if ok {
+		return NewSingleCommand(singleCommand)
+	}
+
+	data, ok := element.(Chain)
+	if !ok {
+		return nil
+	}
+
+	chain := NewCommandsChain(data, nil)
+	if chain == nil {
+		return nil
 	}
 
 	return chain

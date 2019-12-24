@@ -1,9 +1,12 @@
 package chainrunner
 
 import (
+	"golang.org/x/crypto/ssh"
 	"io"
+	"log"
 	"os"
 	"os/exec"
+	"time"
 )
 
 type Session interface {
@@ -11,7 +14,7 @@ type Session interface {
 	String() string
 	SetStdout(writer io.Writer)
 	GetStdout() io.Writer
-	Configure(keyValue map[interface{}]interface{})
+	Configure(data map[string]interface{})
 }
 
 func NewLocalHost() *LocalHost {
@@ -30,7 +33,7 @@ func (l *LocalHost) GetStdout() io.Writer {
 	return l.stdout
 }
 
-func (l *LocalHost) Configure(keyValue map[interface{}]interface{}) {
+func (l *LocalHost) Configure(data map[string]interface{}) {
 	return
 }
 

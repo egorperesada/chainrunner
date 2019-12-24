@@ -33,3 +33,13 @@ func getShellResult(cmd string, session Session) ([]byte, error) {
 
 	return data, nil
 }
+
+func deleteFromSlice(data []interface{}, toDelete []int) []interface{} {
+	for n, i := range toDelete {
+		target := i - n
+		copy(data[target:], data[target+1:])
+		data = data[:len(data)-1]
+	}
+
+	return data
+}
