@@ -86,7 +86,7 @@ func assertChainOnRemoteHost(tc *TestCase) (result bool) {
 	err = session.Run("cat chainrunner")
 	assert.Nil(tc.t, err)
 	assert.Equal(tc.t, "", errors.String())
-	result = assert.Contains(tc.t, buf, "line was added on container")
+	result = assert.Contains(tc.t, buf.String(), "line was added on container")
 	return
 }
 
