@@ -1,6 +1,9 @@
 package chainrunner
 
-import "log"
+import (
+	"errors"
+	"log"
+)
 
 type Command interface {
 	Execute() error
